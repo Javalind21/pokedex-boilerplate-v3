@@ -1,6 +1,7 @@
 const path = require("path");
 const express = require("express");
 const volleyball = require("volleyball");
+const { Pokemon, Trainer } = require("./db");
 const app = express();
 module.exports = app;
 
@@ -38,6 +39,22 @@ app.use((req, res, next) => {
 app.get("/", (req, res, next) => {
   res.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });
+
+app.get("/Pokemon/:id", async (req, res, next) => {
+  try {
+    const Pokemon = await Pokemon.findOne({
+      where: { id: req.params.id },
+      include: Trainer,
+    });
+
+    console.log(Pokemon);
+
+    res.send(Pokemon);
+  } catch (err) {
+    next(err);
+  }
+});
+
 
 // Error catching endware
 app.use((err, req, res, next) => {
